@@ -6,34 +6,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest.json">
-  <!-- Light mode -->
+  <link rel="icon" href="icons/logo.webp" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
-  <!-- Dark mode -->
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
 </head>
 <body>
-<div class="memorize-ui">
-  <button class="settings-btn" id="settingsBtn">⚙️</button>
+<button class="settings-btn" id="settingsBtn">⚙️</button>
 
+<div class="memorize-ui">
   <!-- Centered word + sound -->
   <div class="word-center">
-    <span class="word-text" id="wordText">abandon</span>
+    <span class="word-text" id="wordText">Loading...</span>
     <button class="sound-btn" id="playSound">🔊</button>
   </div>
 
+  <!-- Spacer to push buttons down in phase 1 -->
+  <div class="spacer" id="spacer"></div>
+
   <!-- Explanation (scrollable) -->
   <div class="explain-block" id="explainBlock">
-    <p id="explainText">
-      To leave behind or give up; to withdraw from.
-    </p>
+    <p id="phaseText"></p>
+    <p id="explainText"></p>
+    <div id="examplesText"></div>
   </div>
 
-  <!-- Yes / No row (BOTTOM) -->
+  <!-- Yes / No (always at bottom) -->
   <div class="yn-row">
     <button class="yn-btn no-btn" id="btnNo">No</button>
     <button class="yn-btn yes-btn" id="btnYes">Yes</button>
   </div>
 </div>
+
+<!-- No words screen -->
+<div class="no-words-screen" id="noWordsScreen" style="display: none;">
+  <div class="no-words-title">All done!</div>
+  <div class="no-words-msg">No words to review right now.</div>
+</div>
+
+<!-- Word Levels Screen -->
+<div class="levels-screen" id="levelsScreen" style="display: none;">
+  <div class="levels-header">
+    <h2>Word Levels</h2>
+    <button class="back-btn" id="closeLevels">← Back</button>
+  </div>
+  <div class="levels-list" id="levelsList"></div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal" style="display: none;">
+  <div class="modal-content">
+    <h2>Settings</h2>
+    <div class="setting-item">
+      <label for="languageSelect">Language</label>
+      <select id="languageSelect"></select>
+    </div>
+    <div class="setting-item">
+      <label for="listSelect">Word List</label>
+      <select id="listSelect"></select>
+    </div>
+    <div class="setting-item">
+      <label for="voiceSelect">Voice</label>
+      <select id="voiceSelect"></select>
+    </div>
+    <div class="setting-item">
+      <label for="shuffleToggle">Shuffle Words</label>
+      <input type="checkbox" id="shuffleToggle" />
+    </div>
+    <button class="view-levels-btn" id="viewLevelsBtn">View Word Levels</button>
+    <button class="export-btn" id="exportBtn">Export Progress</button>
+    <button class="import-btn" id="importBtn">Import Progress</button>
+    <button class="close-btn" id="closeSettings">Close</button>
+  </div>
+</div>
+
+<script type="module" src="main.js"></script>
+<script src="sw-register.js"></script>
 </body>
-  <script src="sw-register.js"></script>
 </html>

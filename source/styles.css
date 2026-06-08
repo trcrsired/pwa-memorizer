@@ -13,6 +13,12 @@
 
   --no-bg: #dc2626;
   --no-fg: #ffffff;
+
+  --correct-bg: #16a34a;
+  --correct-fg: #ffffff;
+
+  --wrong-bg: #dc2626;
+  --wrong-fg: #ffffff;
 }
 
 /* --------------------------------------------------
@@ -51,7 +57,7 @@ body {
   flex-direction: column;
   flex: 1;
   padding: 2rem;
-  gap: 2rem;
+  gap: 1.5rem;
   position: relative;
   box-sizing: border-box;
 }
@@ -60,7 +66,7 @@ body {
    SETTINGS BUTTON
 -------------------------------------------------- */
 .settings-btn {
-  position: absolute;
+  position: fixed;
   top: 1.5rem;
   right: 1.5rem;
   background: var(--btn-bg);
@@ -70,6 +76,7 @@ body {
   border-radius: 12px;
   font-size: 1.2rem;
   cursor: pointer;
+  z-index: 100;
 }
 
 /* --------------------------------------------------
@@ -98,23 +105,31 @@ body {
 }
 
 /* --------------------------------------------------
+   SPACER (pushes buttons down in phase 1)
+-------------------------------------------------- */
+.spacer {
+  flex: 1;
+}
+
+/* --------------------------------------------------
    SCROLLABLE EXPLANATION
 -------------------------------------------------- */
 .explain-block {
   flex: 1;
   overflow-y: auto;
-  padding-right: 0.5rem;
+  padding: 1rem;
+  background: var(--btn-bg);
+  border-radius: 16px;
 }
 
-.explain-block h3 {
-  font-size: 1rem;
-  opacity: 0.7;
-  margin-bottom: 0.4rem;
+.explain-block strong {
+  opacity: 0.8;
 }
 
-.explain-block p {
+.explain-block p,
+.explain-block div {
   font-size: 1.1rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* --------------------------------------------------
@@ -128,20 +143,207 @@ body {
 
 .yn-btn {
   flex: 1;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   border: none;
-  border-radius: 20px;
+  border-radius: 16px;
   cursor: pointer;
   padding: 1rem 0;
 }
 
-/* Always red / green */
-.no-btn {
-  background: var(--no-bg);
-  color: var(--no-fg);
+.no-btn { background: var(--no-bg); color: var(--no-fg); }
+.yes-btn { background: var(--yes-bg); color: var(--yes-fg); }
+.wrong-btn { background: var(--wrong-bg); color: var(--wrong-fg); }
+.correct-btn { background: var(--correct-bg); color: var(--correct-fg); }
+.gotit-btn { background: var(--btn-bg); color: var(--btn-fg); }
+
+/* --------------------------------------------------
+   NO WORDS SCREEN
+-------------------------------------------------- */
+.no-words-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  gap: 1rem;
 }
 
-.yes-btn {
+.no-words-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.no-words-msg {
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------
+   MODAL
+-------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg);
+  color: var(--fg);
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h2 {
+  margin: 0 0 1.5rem;
+}
+
+.setting-item {
+  margin: 1rem 0;
+}
+
+.setting-item label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.setting-item select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--btn-bg);
+  background: var(--btn-bg);
+  color: var(--fg);
+  font-size: 1rem;
+}
+
+.close-btn {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  border: none;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* --------------------------------------------------
+   WORD LEVELS LIST
+-------------------------------------------------- */
+.levels-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.levels-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-right: 3rem;
+}
+
+.levels-header h2 {
+  margin: 0;
+}
+
+.back-btn {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.levels-list {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--btn-bg);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.word-level-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--bg);
+}
+
+.word-level-item:last-child {
+  border-bottom: none;
+}
+
+.word-level-name {
+  font-weight: 600;
+}
+
+.word-level-value {
+  display: flex;
+  gap: 2px;
+}
+
+.level-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fg);
+  opacity: 0.3;
+}
+
+.level-dot.active {
+  opacity: 1;
+  background: var(--yes-bg);
+}
+
+.level-dot.mastered {
+  background: gold;
+}
+
+.view-levels-btn {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 12px;
+  border: none;
   background: var(--yes-bg);
   color: var(--yes-fg);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.export-btn,
+.import-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 12px;
+  border: none;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.setting-item input[type="checkbox"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: 0.5rem;
 }

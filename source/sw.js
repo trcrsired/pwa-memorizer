@@ -7,7 +7,15 @@ const CACHE_FILES = [
   './main.js',
   './styles.css',
   './manifest.json',
-  './sw-register.js'
+  './sw-register.js',
+  './sw.js',
+  './i18n.js',
+  './utils/storage.js',
+  './utils/scheduler.js',
+  './data/word-lists.js',
+  './data/wordlists/incel.js',
+  './data/wordlists/cet-4.js',
+  './data/wordlists/toefl.js'
 ];
 
 // LNA (Local Network Access) - Hosts to exclude from SW interception
