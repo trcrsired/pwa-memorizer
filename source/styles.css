@@ -1,0 +1,147 @@
+/* --------------------------------------------------
+   SYSTEM LIGHT MODE (default)
+-------------------------------------------------- */
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+
+  --btn-bg: #e5e7eb;
+  --btn-fg: #000000;
+
+  --yes-bg: #16a34a;
+  --yes-fg: #ffffff;
+
+  --no-bg: #dc2626;
+  --no-fg: #ffffff;
+}
+
+/* --------------------------------------------------
+   SYSTEM DARK MODE
+-------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --fg: #ffffff;
+
+    --btn-bg: #1f2933;
+    --btn-fg: #ffffff;
+
+    --yes-bg: #16a34a;
+    --yes-fg: #ffffff;
+
+    --no-bg: #dc2626;
+    --no-fg: #ffffff;
+  }
+}
+
+/* --------------------------------------------------
+   MAIN LAYOUT
+-------------------------------------------------- */
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+}
+
+.memorize-ui {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 2rem;
+  gap: 2rem;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------
+   SETTINGS BUTTON
+-------------------------------------------------- */
+.settings-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: none;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------
+   WORD + SOUND (CENTERED)
+-------------------------------------------------- */
+.word-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.word-text {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.sound-btn {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------
+   SCROLLABLE EXPLANATION
+-------------------------------------------------- */
+.explain-block {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.explain-block h3 {
+  font-size: 1rem;
+  opacity: 0.7;
+  margin-bottom: 0.4rem;
+}
+
+.explain-block p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------
+   YES / NO BUTTONS (BOTTOM)
+-------------------------------------------------- */
+.yn-row {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.yn-btn {
+  flex: 1;
+  font-size: 1.8rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  padding: 1rem 0;
+}
+
+/* Always red / green */
+.no-btn {
+  background: var(--no-bg);
+  color: var(--no-fg);
+}
+
+.yes-btn {
+  background: var(--yes-bg);
+  color: var(--yes-fg);
+}

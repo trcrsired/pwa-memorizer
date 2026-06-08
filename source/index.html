@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>PWA Memorizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json">
+  <!-- Light mode -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+  <!-- Dark mode -->
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+</head>
+<body>
+<div class="memorize-ui">
+  <button class="settings-btn" id="settingsBtn">⚙️</button>
+
+  <!-- Centered word + sound -->
+  <div class="word-center">
+    <span class="word-text" id="wordText">abandon</span>
+    <button class="sound-btn" id="playSound">🔊</button>
+  </div>
+
+  <!-- Explanation (scrollable) -->
+  <div class="explain-block" id="explainBlock">
+    <p id="explainText">
+      To leave behind or give up; to withdraw from.
+    </p>
+  </div>
+
+  <!-- Yes / No row (BOTTOM) -->
+  <div class="yn-row">
+    <button class="yn-btn no-btn" id="btnNo">No</button>
+    <button class="yn-btn yes-btn" id="btnYes">Yes</button>
+  </div>
+</div>
+</body>
+</html>
