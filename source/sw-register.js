@@ -1,6 +1,6 @@
 // Service Worker Registration
 // Set this to false to disable service worker (useful for development)
-const SW_ENABLED = false;
+const SW_ENABLED = true;
 
 if (SW_ENABLED && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {

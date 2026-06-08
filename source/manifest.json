@@ -1,7 +1,7 @@
 {
   "name": "PWA Memorizer",
   "short_name": "PWA Memorizer",
-  "start_url": "/",
+  "start_url": "./",
   "id": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay"],
