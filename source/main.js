@@ -12,6 +12,11 @@ let selectedVoice = null;
 let voices = [];
 let shuffle = false;
 
+// Track recently shown words to enforce spacing
+// A word must wait for MIN_GAP other words before it can reappear
+const MIN_GAP = 2;
+let recentlyShown = [];
+
 const wordText = document.getElementById('wordText');
 const playSound = document.getElementById('playSound');
 const spacer = document.getElementById('spacer');
@@ -244,33 +249,60 @@ function getNextWord() {
   const data = JSON.parse(localStorage.getItem('pwa-memorizer-data'));
   const newWordsCount = data.session.newWordsToday || 0;
 
+  // Helper: check if word can be shown (not in recentlyShown)
+  const canShow = (wordId) => !recentlyShown.includes(wordId);
+
   // Learning phase: must learn at least 3 new words first
   if (newWordsCount < 3) {
-    let newWords = wordList.words.filter(w => !data.session.reviewedToday.includes(w.word) && !data.wordProgress[w.word]);
+    let newWords = wordList.words.filter(w =>
+      !data.session.reviewedToday.includes(w.word) &&
+      !data.wordProgress[w.word]
+    );
     if (shuffle) newWords = shuffleArray([...newWords]);
+    // Prefer words not recently shown
+    const notRecent = newWords.filter(w => canShow(w.word));
+    if (notRecent.length > 0) {
+      incrementNewWordsCount();
+      trackShown(notRecent[0].word);
+      return { ...notRecent[0], progress: { level: 4, nextReviewDate: null } };
+    }
     if (newWords.length > 0) {
       incrementNewWordsCount();
-      const word = newWords[0];
-      return { ...word, progress: { level: 4, nextReviewDate: null } };
+      trackShown(newWords[0].word);
+      return { ...newWords[0], progress: { level: 4, nextReviewDate: null } };
     }
   }
 
-  // Review phase: cycle pending reviews first
-  const pending = getPendingReviews();
-  if (pending.length > 0) {
-    const word = getWord(wordList.id, pending[0]);
-    if (word) return { ...word, progress: getWordProgress(pending[0]) };
-  }
-
-  // Then scheduled reviews (words not yet reviewed today)
+  // Review phase: get all words needing same-session review (level ≤ 6, not reviewed today)
   const scheduled = getScheduledReviews(wordList);
-  if (scheduled.length > 0) {
-    let notReviewed = scheduled.filter(w => !data.session.reviewedToday.includes(w.word));
-    if (shuffle) notReviewed = shuffleArray([...notReviewed]);
-    if (notReviewed.length > 0) {
-      const word = notReviewed[0];
-      return { ...word, progress: getWordProgress(word.word) };
+  const sameSession = scheduled.filter(w => {
+    const progress = getWordProgress(w.word);
+    return progress.level <= 6 && !data.session.reviewedToday.includes(w.word);
+  });
+
+  // Filter out recently shown words
+  const eligible = sameSession.filter(w => canShow(w.word));
+  if (eligible.length > 0) {
+    if (shuffle) {
+      const shuffled = shuffleArray([...eligible]);
+      trackShown(shuffled[0].word);
+      return { ...shuffled[0], progress: getWordProgress(shuffled[0].word) };
     }
+    trackShown(eligible[0].word);
+    return { ...eligible[0], progress: getWordProgress(eligible[0].word) };
+  }
+
+  // If all same-session words are in recentlyShown, allow showing any of them
+  if (sameSession.length > 0) {
+    // Reset recentlyShown to allow cycling
+    recentlyShown = recentlyShown.slice(-1); // Keep only last one
+    if (shuffle) {
+      const shuffled = shuffleArray([...sameSession]);
+      trackShown(shuffled[0].word);
+      return { ...shuffled[0], progress: getWordProgress(shuffled[0].word) };
+    }
+    trackShown(sameSession[0].word);
+    return { ...sameSession[0], progress: getWordProgress(sameSession[0].word) };
   }
 
   // If scheduled reviews exist but all reviewed today, wait
@@ -280,14 +312,28 @@ function getNextWord() {
   if (canLearnNewWords()) {
     let newWords = wordList.words.filter(w => !data.session.reviewedToday.includes(w.word));
     if (shuffle) newWords = shuffleArray([...newWords]);
+    const notRecent = newWords.filter(w => canShow(w.word));
+    if (notRecent.length > 0) {
+      incrementNewWordsCount();
+      trackShown(notRecent[0].word);
+      return { ...notRecent[0], progress: getWordProgress(notRecent[0].word) };
+    }
     if (newWords.length > 0) {
       incrementNewWordsCount();
-      const word = newWords[0];
-      return { ...word, progress: getWordProgress(word.word) };
+      trackShown(newWords[0].word);
+      return { ...newWords[0], progress: getWordProgress(newWords[0].word) };
     }
   }
 
   return null;
+}
+
+function trackShown(wordId) {
+  recentlyShown.push(wordId);
+  // Keep only MIN_GAP entries to allow words to cycle back
+  if (recentlyShown.length > MIN_GAP) {
+    recentlyShown.shift();
+  }
 }
 
 function showNoWords() {
@@ -350,11 +396,6 @@ function handleYes() {
     const markReviewed = newLevel > 6;
     removeFromPending(wordId, markReviewed);
 
-    // If level ≤6 and not already in pending, add back for more review
-    if (!markReviewed && newLevel <= 6) {
-      addToPendingReview(wordId);
-    }
-
     showNextWord();
   }
 }
@@ -365,27 +406,15 @@ function handleNo() {
     const wordId = currentWord.word;
     // Reset level to 0 when user doesn't know the word
     updateWordProgress(wordId, { level: 0, nextReviewDate: null, lastReviewDate: new Date().toISOString() });
-    addToPendingReview(wordId);
     phase = 2;
     render();
   } else {
     // Phase 2: No acts as wrong (only meaningful if phase1 was yes)
-    let newLevel = 0;
     if (phase1Result === 'yes') {
       const wordId = currentWord.word;
       const progress = getWordProgress(wordId);
       const newProgress = updateLevel(progress.level, -1);
-      newLevel = newProgress.level;
       updateWordProgress(wordId, newProgress);
-    }
-
-    // Only mark as reviewed if level > 6
-    const markReviewed = newLevel > 6;
-    removeFromPending(currentWord.word, markReviewed);
-
-    // If level ≤6, add back for more review
-    if (!markReviewed) {
-      addToPendingReview(currentWord.word);
     }
 
     showNextWord();
